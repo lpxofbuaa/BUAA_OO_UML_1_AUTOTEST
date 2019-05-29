@@ -68,10 +68,28 @@ class Model:
         else:
             self._interfaceFather[source] = target
 
+    def getClass(self):
+        return self._classes
+
+    def getInterface(self):
+        return self._interfaces
+
+    def getClassAttributes(self,classid):
+        names = []
+        for id in self._classAttributes[classid]:
+            if self._map[id] not in names:
+                names.append(self._map[id])
+        return names
+
+    def getClassParentId(self,classid):
+        if (classid in self._classesFather):
+            return self._classesFather[classid]
+        else:
+            return None
 
 class ModelBuilder:
-    def __init__(self,modelname,filename):
-        self._file = open(filename,'w')
+    def __init__(self,modelname,file):
+        self._file = file
         self._class = 'UMLClass'
         self._interface = 'UMLInterface'
         self._operation = 'UMLOperation'
@@ -99,7 +117,7 @@ class ModelBuilder:
         self._idlist.insert(0,'A')
         self._idnum = []
         begin = random.randint(500,9999999)
-        for i in range(400):
+        for i in range(500):
             self._idnum.append(begin + i)
         self._parentId = None
 
@@ -121,8 +139,7 @@ class ModelBuilder:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self._file.write('END_OF_MODEL')
-        self._file.close()
+        self._file.write('END_OF_MODEL\n')
 
     def _makeUml(self,id,parent,name,umlType,info):
         uml = '{'
