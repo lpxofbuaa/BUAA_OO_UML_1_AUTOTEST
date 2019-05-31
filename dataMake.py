@@ -1,4 +1,6 @@
-from randomUmlMake import *
+from randomUmlMake import randomUmlMake
+from randomUmlMake import methodsName
+import sys
 
 def createClassCount():
     return 'CLASS_COUNT'
@@ -38,41 +40,47 @@ def createImpleInterList(className):
 def createInfoHidden(className):
     return 'CLASS_INFO_HIDDEN '+className 
 
-instrs = []
+def dataMake(count='1'):
+    instrs = []
+    with randomUmlMake(count) as m:
+        model = m[0]
+        datafile = m[1]
+        classidMap = model.getClass()
+        interfaceidMap = model.getInterface()
+        instrs.append(createClassCount())
+        for i in classidMap:
+            className = classidMap[i]
+            instrs.extend(createClassOpCount(className))
+            instrs.extend(createClassAttrCount(className))
+            instrs.append(createClassAssoCount(className))
+            instrs.append(createClassAssoClassList(className))
+            instrs.append(createClassTop(className))
+            instrs.append(createImpleInterList(className))
+            instrs.append(createInfoHidden(className))
+            classid = i
+            methods = list(methodsName)
+            for method in methods:
+                instrs.append(createOpVisibility(className,method))
+            attrnames = []
+            while (classid != None):
+                attrnames.extend(model.getClassAttributes(classid))
+                classid = model.getClassParentId(classid)
+            attrnames = set(attrnames)
+            for s in attrnames:
+                instrs.append(createAttrVisibility(className,s))
+        for i in range(len(instrs)):
+            if (i != len(instrs)-1):
+                datafile.write(instrs[i]+'\n')
+            else:
+                datafile.write(instrs[i])
 
-with randomUmlMake('data1.txt') as m:
-    model = m[0]
-    datafile = m[1]
-    classidMap = model.getClass()
-    interfaceidMap = model.getInterface()
-    instrs.append(createClassCount())
-    for i in classidMap:
-        className = classidMap[i]
-        instrs.extend(createClassOpCount(className))
-        instrs.extend(createClassAttrCount(className))
-        instrs.append(createClassAssoCount(className))
-        instrs.append(createClassAssoClassList(className))
-        instrs.append(createClassTop(className))
-        instrs.append(createImpleInterList(className))
-        instrs.append(createInfoHidden(className))
-        for method in range(operationtotal):
-            methodName = className+OPERATIONNAME+str(method)
-            instrs.append(createOpVisibility(className,methodName))
-        classid = i
-        attrnames = []
-        while (classid != None):
-            attrnames.extend(model.getClassAttributes(classid))
-            classid = model.getClassParentId(classid)
-        attrnames = set(attrnames)
-        for s in attrnames:
-            instrs.append(createAttrVisibility(className,s))
-    for i in range(len(instrs)):
-        if (i != len(instrs)-1):
-            datafile.write(instrs[i]+'\n')
-        else:
-            datafile.write(instrs[i])
+if __name__ == "__main__":
+    if (len(sys.argv)<2):
+        dataMake()  
+    else:
+        dataMake(sys.argv[1])
 
-            
+
 
         
     

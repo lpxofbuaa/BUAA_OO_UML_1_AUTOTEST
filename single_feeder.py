@@ -4,7 +4,7 @@ import time
 import os,shutil
 from spec_judge import spec_judge
 
-depend = 'lib/specs-homework-1-1.1-raw-jar-with-dependencies.jar;lib/specs-homework-2-1.2-raw-jar-with-dependencies.jar;lib/specs-homework-3-1.3-raw-jar-with-dependencies.jar'
+depend = 'lib/uml-homework-1.0.0-raw-jar-with-dependencies.jar'
 
 
 def run_pro(cp,mc,name,infile):

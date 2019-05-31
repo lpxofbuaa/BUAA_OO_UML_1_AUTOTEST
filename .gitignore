@@ -1,3 +1,10 @@
+build/
+dist/
+classes/
+keyData/
+__pycache__/
+clean.bat
+sample.txt
 .vscode/launch.json
 template.txt
 ttt

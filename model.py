@@ -76,6 +76,8 @@ class Model:
 
     def getClassAttributes(self,classid):
         names = []
+        if classid not in self._classAttributes:
+            return names
         for id in self._classAttributes[classid]:
             if self._map[id] not in names:
                 names.append(self._map[id])
@@ -86,6 +88,12 @@ class Model:
             return self._classesFather[classid]
         else:
             return None
+
+    def getClassOperations(self,classid):
+        names = []
+        for id in self._classOperations[classid]:
+            names.append(self._operations[id])
+        return set(names)
 
 class ModelBuilder:
     def __init__(self,modelname,file):
@@ -105,7 +113,7 @@ class ModelBuilder:
         self._name = '"name":' 
         self._type = '"_type":'
         self._visibility = '"visibility":'
-        self._idlist = ['=','/','+','\\']
+        self._idlist = ['=','/','+']
         for i in range(10):
             self._idlist.append(str(i))
         for i in range(26):
@@ -117,7 +125,7 @@ class ModelBuilder:
         self._idlist.insert(0,'A')
         self._idnum = []
         begin = random.randint(500,9999999)
-        for i in range(500):
+        for i in range(1000):
             self._idnum.append(begin + i)
         self._parentId = None
 

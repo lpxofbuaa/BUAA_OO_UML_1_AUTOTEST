@@ -3,8 +3,9 @@ import sys
 import time
 import os,shutil
 from spec_judge import spec_judge
+from dataMake import dataMake
 
-depend = 'lib/specs-homework-1-1.1-raw-jar-with-dependencies.jar;lib/specs-homework-2-1.2-raw-jar-with-dependencies.jar;lib/specs-homework-3-1.3-raw-jar-with-dependencies.jar'
+depend = 'lib/uml-homework-1.0.0-raw-jar-with-dependencies.jar'
 eff = 'efficient\\'
 effile = None
 
@@ -24,11 +25,11 @@ def run_pro(cp,mc,name,infile):
             return -1
         else:
             try:
-                p.wait(35)
+                p.wait(5)
             except:
                 end_time = time.time()
                 p.kill()
-                if (end_time - start_time >= 33):
+                if (end_time - start_time >= 2):
                     print(name + ' run over, time is ' + str(end_time - start_time))
                     effile.write(str(end_time - start_time) + ',')
                     errout.close()
@@ -68,8 +69,21 @@ def main(max = 0,datamode = 'random'):
         print('NO.'+str(counter+1))
         counter+=1
         end = []
-        datamake = sb.Popen(["python","data_make.py",str(counter),str(datamode)])
-        datamake.wait()
+        '''
+        start_time = time.time()
+        while True:
+            dataMakePro = sb.Popen(['python','dataMake.py',str(counter)])
+            try:
+                dataMakePro.wait(3)
+                break
+            except KeyboardInterrupt:
+                exit()
+            except:
+                end_time = time.time()
+                if (end_time - start_time >= 2):
+                    continue
+        '''
+        dataMake(str(counter))
         for i in range(len(names)):
             re = run_pro('classes\\'+names[i],mc[i],names[i],'data/data' +str(counter) + '.txt')
             end.append(re)
@@ -100,7 +114,7 @@ def main(max = 0,datamode = 'random'):
         # if (k == False):
             # break
         sp = spec_judge()
-        k = sp.run(realnames)
+        k &= sp.run(realnames)
         print()
         if (k == False):
             nre += 'WA'
@@ -119,12 +133,16 @@ def main(max = 0,datamode = 'random'):
         with open('result.bat','w') as out:
             out.write('@echo off\n')
             out.write('copy data\data'+str(counter)+'.txt keyData'+ '\\' + nre +str(int(time.time()))+'.txt\n')
-            out.write('color 4f')
+            out.write('copy data\data_struct_'+str(counter)+'.txt keyData'+ '\\' + nre +str(int(time.time()))+'struct.txt\n')
+            out.write('color 4f\n')
+            # out.write('pause')
     else:
         print('Run Finish.')
         with open('result.bat','w') as out:
             out.write('@echo off\n')
-            out.write('del out\*.out')
+            out.write('del out\*.out\n')
+            out.write('del out\*.err')
+            # out.write('pause')
 
 openeff()
 if (len(sys.argv) < 2):

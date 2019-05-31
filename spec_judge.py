@@ -1,5 +1,3 @@
-import difflib
-
 class spec_judge:
     def __init__(self):
         self.names = []
@@ -30,5 +28,7 @@ class spec_judge:
         return t
 
     def run(self,names):
+        if (names == []):
+            return True
         r = self.check(names)
         return r
