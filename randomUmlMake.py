@@ -8,15 +8,17 @@ ATTRIBUTENAME = 'attribute'
 VISIBILITY = ['public','private','protected','package']
 PARA = 'para'
 
-classtotal = 80
-interfacetotal = 80
-operationtotal = 0
-attributetotal = 1
-geneclasstotal = classtotal - 40
-geneintertotal = interfacetotal - 40
-interfaceFatherCount = 5
-associationtotal = 30
-realizationtotal = 30
+classtotal = 10
+interfacetotal = 10
+operationtotal = 1
+attributetotal = 3
+geneclasstotal = classtotal - 4
+geneintertotal = interfacetotal -2
+interfaceFatherCount = 3
+associationtotal = 10
+realizationtotal = 70
+interfaceNameMulti = True
+classNameMulti = True
 
 methodsName = set()
 
@@ -24,6 +26,8 @@ def makeClassName(num):
     return CLASSNAME + str(num)
 
 def makeInterfaceName(num):
+    if (interfaceNameMulti):
+        return INTERFACENAME + str(random.randint(0,num))
     return INTERFACENAME + str(num)
 
 def makeOperationName(parentnum,num,isClass):
@@ -53,21 +57,6 @@ def makeOperation(builder,parentid,inputcount,isreturn,visibility,opname):
     if (isreturn):
         builder.createParameter(opid,'return','int','return')
 
-'''
-with ModelBuilder('Model','data1.txt') as builder:
-    c1 = builder.createClass('Father','public')
-    c2 = builder.createClass('Son','public')
-    builder.createGeneralization('none',c2,c1)
-    builder.createAttribute(c1,'name','public','String')
-    builder.createAttribute(c2,'name','private','String')
-    c1op1 = builder.createOperation(c1,'getName','public')
-    builder.createParameter(c1op1,'n','String','return')
-    c1op2 = builder.createOperation(c1,'setName','public')
-    builder.createParameter(c1op2,'s','String','in')
-    c1op3 = builder.createOperation(c1,'nothing','public')
-    i1 = builder.createInterface('Eat','public')
-    builder.createAssociation('noname','public','public',c1,i1)
-'''
 def randomParent(total,builder,parentlist,void,create,isClass=True):
     for i in range(total):
         parentid = create(void(i),makeVisibility())
@@ -123,6 +112,7 @@ def randomGen(builder,gentotal,parentlist,parenttotal,struct):
     struct.write('\n')
 
 def randomInterfaceGenerealization(builder,struct,parentlist):
+    struct.write('interfaces:')
     parent = {}
     for i in range(interfacetotal):
         parent[i] = set()
@@ -145,17 +135,31 @@ def randomInterfaceGenerealization(builder,struct,parentlist):
                 faindex = random.randint(0,len(fathers)-1)
                 fa = fathers[faindex]
             if (k):
+                parent[i].add(fa)
+                parent[i].update(parent[fa])
                 for t in parent:
                     if i in parent[t]:
-                        parent[t].add(fa)
+                        parent[t].update(parent[i])
                 struct.write(str(i)+' father is '+str(fa)+'\n')
+                '''
+                print('new')
+                for s in parent:
+                    print('\t'+str(s)+'\t'+str(parent[s]))
+                '''
                 builder.createGeneralization('intergen',parentlist[i],parentlist[fa])
-
+                
 
 def randomRealization(builder,classlist,interlist):
+    create = []
     for i in range(realizationtotal):
         source = classlist[random.randint(0,classtotal-1)]
         target = interlist[random.randint(0,interfacetotal-1)]
+        s = source+'#'+target
+        while s in create:
+            source = classlist[random.randint(0,classtotal-1)]
+            target = interlist[random.randint(0,interfacetotal-1)]
+            s = source+'#'+target
+        create.append(s)
         builder.createInterfaceRealization('interreal',source,target)
 
 def randomAssociation(builder,list):
@@ -170,7 +174,8 @@ def randomData(file,struct):
         interfacelist = []
         randomParent(classtotal,builder,classlist,makeClassName,builder.createClass,True)
         randomParent(interfacetotal,builder,interfacelist,makeInterfaceName,builder.createInterface,False)
-        builder.createClass(makeClassName(random.randint(0,classtotal)),'public')
+        if (classNameMulti):
+            builder.createClass(makeClassName(random.randint(0,classtotal)),'public')
         randomGen(builder,geneclasstotal,classlist,classtotal,struct)
         randomInterfaceGenerealization(builder,struct,interfacelist)
         randomRealization(builder,classlist,interfacelist)

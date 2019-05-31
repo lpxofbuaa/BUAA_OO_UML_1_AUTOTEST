@@ -124,6 +124,7 @@ class ModelBuilder:
         self._idlist = random.sample(list(self._idlist),9)
         self._idlist.insert(0,'A')
         self._idnum = []
+        self._umls = []
         begin = random.randint(500,9999999)
         for i in range(1000):
             self._idnum.append(begin + i)
@@ -147,6 +148,9 @@ class ModelBuilder:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
+        random.shuffle(self._umls)
+        for s in self._umls:
+            self._file.write(s+'\n')
         self._file.write('END_OF_MODEL\n')
 
     def _makeUml(self,id,parent,name,umlType,info):
@@ -223,27 +227,28 @@ class ModelBuilder:
             uml += source + '"' + info[0] + '",'
             uml += target + '"' + info[1] + '"'
         uml += '}'
-        return uml
+        self._umls.append(uml)
 
     def createClass(self,className,visibility):
         id = self._makeId()
         parentId = self._parentId
         self._model._addClass(className,visibility,id)
-        self._file.write(self._makeUml(id,parentId,className,self._class,(visibility,)) + '\n')
+        self._makeUml(id,parentId,className,self._class,(visibility,))
         return id
 
     def createInterface(self,interfaceName,visibility):
         id = self._makeId()
         parentId = self._parentId
         self._model._addInterface(interfaceName,visibility,id)
-        self._file.write(self._makeUml(id,parentId,interfaceName,self._interface,(visibility,)) + '\n')
+        self._makeUml(id,parentId,interfaceName,self._interface,(visibility,))
+        return id
 
     def createOperation(self,parentId,operationName,visibility):
         if (parentId not in self._model._classes)&(parentId not in self._model._interfaces):
             return None
         id = self._makeId()
         self._model._addOperation(parentId,operationName,visibility,id)
-        self._file.write(self._makeUml(id,parentId,operationName,self._operation,(visibility,)) + '\n')
+        self._makeUml(id,parentId,operationName,self._operation,(visibility,)) 
         return id
     
     def createAttribute(self,parentId,attributeName,visibility,attributeType):
@@ -251,7 +256,7 @@ class ModelBuilder:
             return None
         id = self._makeId()
         self._model._addAttribute(parentId,attributeName,visibility,id,attributeType)
-        self._file.write(self._makeUml(id,parentId,attributeName,self._attribute,(visibility,attributeType)) + '\n')
+        self._makeUml(id,parentId,attributeName,self._attribute,(visibility,attributeType)) 
         return id
 
     def createParameter(self,parentId,parameterName,parameterType,direction):
@@ -259,7 +264,7 @@ class ModelBuilder:
             return None
         id = self._makeId()
         self._model._addParameter(parentId,parameterName,id,parameterType,direction)
-        self._file.write(self._makeUml(id,parentId,parameterName,self._parameter,(parameterType,direction)) + '\n')
+        self._makeUml(id,parentId,parameterName,self._parameter,(parameterType,direction)) 
         return id
 
     def createGeneralization(self,name,source,target):
@@ -270,7 +275,7 @@ class ModelBuilder:
         id = self._makeId()
         parentId = source
         self._model._addGeneralization(source,target)
-        self._file.write(self._makeUml(id,parentId,name,self._generalization,(source,target)) + '\n')
+        self._makeUml(id,parentId,name,self._generalization,(source,target)) 
         return id
     
     def createAssociation(self,name,end1Visibility,end2Visibility,end1Ref,end2Ref):
@@ -282,9 +287,9 @@ class ModelBuilder:
         end2Id = self._makeId()
         end1ParentId = id
         end2ParentId = id
-        self._file.write(self._makeUml(id,parentId,name,self._association,(end1Id,end2Id)) + '\n')
-        self._file.write(self._makeUml(end1Id,end1ParentId,name,self._associationEnd,(end1Ref,end1Visibility)) + '\n')
-        self._file.write(self._makeUml(end2Id,end2ParentId,name,self._associationEnd,(end2Ref,end2Visibility)) + '\n')
+        self._makeUml(id,parentId,name,self._association,(end1Id,end2Id)) 
+        self._makeUml(end1Id,end1ParentId,name,self._associationEnd,(end1Ref,end1Visibility)) 
+        self._makeUml(end2Id,end2ParentId,name,self._associationEnd,(end2Ref,end2Visibility)) 
         return id
 
     def createInterfaceRealization(self,name,source,target):
@@ -294,7 +299,7 @@ class ModelBuilder:
             return None
         id = self._makeId()
         parentId = source
-        self._file.write(self._makeUml(id,parentId,name,self._interfaceRealization,(source,target)) + '\n')
+        self._makeUml(id,parentId,name,self._interfaceRealization,(source,target)) 
         return id
 
     def getModel(self):

@@ -73,6 +73,7 @@ def dataMake(count='1'):
                 datafile.write(instrs[i]+'\n')
             else:
                 datafile.write(instrs[i])
+    print('Data gen finish!')
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):
