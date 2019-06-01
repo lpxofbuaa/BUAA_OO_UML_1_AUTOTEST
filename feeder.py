@@ -4,9 +4,8 @@ import time
 import os,shutil
 from spec_judge import spec_judge
 from dataMake import dataMake
+from setting import *
 
-depend = 'lib/uml-homework-1.0.0-raw-jar-with-dependencies.jar'
-eff = 'efficient\\'
 effile = None
 
 def openeff():
@@ -25,7 +24,7 @@ def run_pro(cp,mc,name,infile):
             return -1
         else:
             try:
-                p.wait(5)
+                p.wait(30)
             except:
                 end_time = time.time()
                 p.kill()
@@ -83,7 +82,7 @@ def main(max = 0,datamode = 'random'):
                 if (end_time - start_time >= 2):
                     continue
         '''
-        dataMake(str(counter))
+        dataMake(str(counter),mode=strongMode,isStrong=isStrong)
         for i in range(len(names)):
             re = run_pro('classes\\'+names[i],mc[i],names[i],'data/data' +str(counter) + '.txt')
             end.append(re)

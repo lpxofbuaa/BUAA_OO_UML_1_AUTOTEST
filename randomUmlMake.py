@@ -1,4 +1,5 @@
 from model import *
+from setting import *
 
 PARENTNAME = 'parent'
 CLASSNAME = 'class'
@@ -7,18 +8,6 @@ OPERATIONNAME = 'method'
 ATTRIBUTENAME = 'attribute'
 VISIBILITY = ['public','private','protected','package']
 PARA = 'para'
-
-classtotal = 10
-interfacetotal = 10
-operationtotal = 1
-attributetotal = 3
-geneclasstotal = classtotal - 4
-geneintertotal = interfacetotal -2
-interfaceFatherCount = 3
-associationtotal = 10
-realizationtotal = 70
-interfaceNameMulti = True
-classNameMulti = True
 
 methodsName = set()
 
@@ -51,9 +40,11 @@ def makeVisibility(randomMode=False):
     return VISIBILITY[random.randint(0,3)]
 
 def makeOperation(builder,parentid,inputcount,isreturn,visibility,opname):
+    inmode = ['in','out','inout']
     opid = builder.createOperation(parentid,opname,visibility)
     for i in range(inputcount):
-        builder.createParameter(opid,PARA + str(i),'int','in')
+        mode = inmode[random.randint(0,2)]
+        builder.createParameter(opid,PARA + str(i),'int',mode)
     if (isreturn):
         builder.createParameter(opid,'return','int','return')
 
@@ -64,12 +55,14 @@ def randomParent(total,builder,parentlist,void,create,isClass=True):
         opcount = 0
         opnum = 0
         oppara = []
+        if (~isClass):
+            continue
         while (opcount < operationtotal):
             opcount += 1
             if (random.randint(0,2) == 0):
                 oppara = []
                 opnum += 1
-            inputcount = random.randint(0,4)
+            inputcount = random.randint(0,parameterCount)
             isreturn = random.choice([True,False])
             visibility = makeVisibility()
             while (str(inputcount)+str(isreturn)+str(visibility) in oppara):
@@ -81,7 +74,7 @@ def randomParent(total,builder,parentlist,void,create,isClass=True):
         while (attricount < attributetotal):
             attricount += 1
             parentnum = i
-            if (random.randint(0,3) == 0):
+            if (random.randint(0,attributeSameCount) == 0):
                 while (parentnum == i):
                     parentnum = random.randint(0,total)
             builder.createAttribute(parentid,makeAttributeName(parentnum,attricount,isClass),makeVisibility(True),'int')
@@ -112,7 +105,7 @@ def randomGen(builder,gentotal,parentlist,parenttotal,struct):
     struct.write('\n')
 
 def randomInterfaceGenerealization(builder,struct,parentlist):
-    struct.write('interfaces:')
+    struct.write('interfaces:\n')
     parent = {}
     for i in range(interfacetotal):
         parent[i] = set()
@@ -140,7 +133,7 @@ def randomInterfaceGenerealization(builder,struct,parentlist):
                 for t in parent:
                     if i in parent[t]:
                         parent[t].update(parent[i])
-                struct.write(str(i)+' father is '+str(fa)+'\n')
+                struct.write(parentlist[i]+' father is '+parentlist[fa]+'\n')
                 '''
                 print('new')
                 for s in parent:

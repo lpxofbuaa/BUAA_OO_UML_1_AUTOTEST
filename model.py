@@ -125,9 +125,9 @@ class ModelBuilder:
         self._idlist.insert(0,'A')
         self._idnum = []
         self._umls = []
-        begin = random.randint(500,9999999)
+        begin = random.randint(9999999,999999999)
         for i in range(1000):
-            self._idnum.append(begin + i)
+            self._idnum.append(begin + i*11)
         self._parentId = None
 
     def _makeId(self):

@@ -55,7 +55,7 @@ def helpbook():
     print('Here are some help for you:')
     print('\t-r     :  run only, requires that you have already compiled all the src and create the \'namelist.txt\' ')
     print('\t          you also need some args for runing mode : first arg is the count of tests, 0 means non-limited; second arg is data mode')
-    print('\t          data modes : random or jml3test or shortmain')
+    print('\t          data modes : random')
     print('\t-c     :  compile only, requires that you have created \'namelist.txt\' ')
     print('\t-cr    :  compile and run, requires that you have created \'namelist.txt\' ,args are the same as -r')
     print('\t-inputc:  input the names and compile them')

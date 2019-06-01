@@ -3,9 +3,7 @@ import sys
 import time
 import os,shutil
 from spec_judge import spec_judge
-
-depend = 'lib/uml-homework-1.0.0-raw-jar-with-dependencies.jar'
-
+from setting import depend
 
 def run_pro(cp,mc,name,infile):
     global depend
