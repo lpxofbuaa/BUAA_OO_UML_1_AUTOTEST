@@ -5,6 +5,7 @@ from setting import *
 import sys
 import random
 
+
 def createClassCount():
     return 'CLASS_COUNT'
 
